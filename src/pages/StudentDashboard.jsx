@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { useAuth } from '../context/AuthContext'
-import { useNavigate } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import api from '../api/api'
 import { Spinner, Alert } from '../components/UI'
 
@@ -202,9 +202,9 @@ export default function StudentDashboard() {
             <div className="dash-title">My DPP — 7 Day Report</div>
 
             {/* Today's DPP button */}
-            <Link to="/dpp" className="btn btn-primary" style={{ marginBottom:'20px', display:'inline-flex' }}>
-            📝 Attempt Today's DPP →
-          </Link>
+            <Link href="/dpp" className="btn btn-primary" style={{ marginBottom:'24px', display:'inline-flex' }}>
+              📝 Attempt Today's DPP →
+            </Link>
 
             {/* Weekly summary cards */}
             {!reportLoad && dppReport.length > 0 && (() => {
