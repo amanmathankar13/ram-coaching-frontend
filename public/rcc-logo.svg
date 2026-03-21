@@ -1,0 +1,139 @@
+<svg width="400" height="450" viewBox="0 0 220 250" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="shieldHL" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%"   stop-color="#d44808"/>
+      <stop offset="49%"  stop-color="#c03a00"/>
+      <stop offset="51%"  stop-color="#f08030"/>
+      <stop offset="100%" stop-color="#e06010"/>
+    </linearGradient>
+    <linearGradient id="goldRing" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%"   stop-color="#f5d060"/>
+      <stop offset="40%"  stop-color="#d4a020"/>
+      <stop offset="70%"  stop-color="#f0c030"/>
+      <stop offset="100%" stop-color="#b87e10"/>
+    </linearGradient>
+    <linearGradient id="circleGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%"   stop-color="#8b3a0a"/>
+      <stop offset="100%" stop-color="#5c2006"/>
+    </linearGradient>
+    <linearGradient id="ribbonGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%"   stop-color="#f0c030"/>
+      <stop offset="50%"  stop-color="#d4a020"/>
+      <stop offset="100%" stop-color="#8b5e08"/>
+    </linearGradient>
+    <linearGradient id="shineLeft" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%"   stop-color="#ff8844" stop-opacity="0.3"/>
+      <stop offset="100%" stop-color="#cc3300" stop-opacity="0"/>
+    </linearGradient>
+    <linearGradient id="shineRight" x1="100%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%"   stop-color="#ffaa66" stop-opacity="0.4"/>
+      <stop offset="100%" stop-color="#dd4400" stop-opacity="0"/>
+    </linearGradient>
+    <filter id="glow">
+      <feGaussianBlur stdDeviation="1.5" result="blur"/>
+      <feMerge>
+        <feMergeNode in="blur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+    <filter id="goldGlow">
+      <feGaussianBlur stdDeviation="1" result="blur"/>
+      <feMerge>
+        <feMergeNode in="blur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+
+  <!-- Shield body -->
+  <path d="M110 8 L205 45 L205 130 Q205 195 110 235 Q15 195 15 130 L15 45 Z"
+    fill="url(#shieldHL)" stroke="url(#goldRing)" stroke-width="5"/>
+
+  <!-- Shield left half shine -->
+  <path d="M110 8 L15 45 L15 130 Q15 195 110 235 L110 8 Z"
+    fill="url(#shineLeft)"/>
+
+  <!-- Shield right half shine -->
+  <path d="M110 8 L205 45 L205 130 Q205 195 110 235 L110 8 Z"
+    fill="url(#shineRight)"/>
+
+  <!-- Vertical divider -->
+  <line x1="110" y1="8" x2="110" y2="225"
+    stroke="url(#goldRing)" stroke-width="1.5" opacity="0.5"/>
+
+  <!-- Horizontal divider -->
+  <line x1="15" y1="88" x2="205" y2="88"
+    stroke="url(#goldRing)" stroke-width="1.5" opacity="0.5"/>
+
+  <!-- Outer gold ring -->
+  <circle cx="110" cy="115" r="73"
+    fill="none" stroke="url(#goldRing)" stroke-width="9"/>
+
+  <!-- Inner circle fill -->
+  <circle cx="110" cy="115" r="64"
+    fill="url(#circleGrad)"/>
+
+  <!-- Inner circle border -->
+  <circle cx="110" cy="115" r="62"
+    fill="none" stroke="#f0c030" stroke-width="1.5" opacity="0.6"/>
+
+  <!-- Inner circle highlight -->
+  <circle cx="110" cy="115" r="60"
+    fill="none" stroke="#f5d060" stroke-width="0.5" opacity="0.3"/>
+
+  <!-- Stars row -->
+  <text x="110" y="70" text-anchor="middle"
+    fill="#d4a843" font-size="12" letter-spacing="6"
+    filter="url(#goldGlow)">★ ★ ★ ★</text>
+
+  <!-- RCC text -->
+  <text x="108" y="134" text-anchor="middle"
+    font-family="Georgia, 'Times New Roman', serif"
+    font-size="50" font-weight="700"
+    fill="url(#goldRing)" letter-spacing="-2"
+    filter="url(#goldGlow)">RCC</text>
+
+  <!-- Decorative flourish -->
+  <text x="110" y="162" text-anchor="middle"
+    fill="#c49020" font-size="14" opacity="0.9">✦ ❧ ✦</text>
+
+  <!-- Ribbon left wing -->
+  <path d="M22 208 Q50 194 78 206 L78 233 Q50 223 22 235 Z"
+    fill="url(#ribbonGrad)"/>
+
+  <!-- Ribbon left wing shadow -->
+  <path d="M22 235 Q50 223 78 233 L78 236 Q50 226 22 238 Z"
+    fill="#6b4a06" opacity="0.5"/>
+
+  <!-- Ribbon right wing -->
+  <path d="M142 206 Q170 194 198 208 L198 235 Q170 223 142 233 Z"
+    fill="url(#ribbonGrad)"/>
+
+  <!-- Ribbon right wing shadow -->
+  <path d="M142 233 Q170 223 198 235 L198 238 Q170 226 142 236 Z"
+    fill="#6b4a06" opacity="0.5"/>
+
+  <!-- Ribbon center body -->
+  <rect x="69" y="198" width="82" height="40" rx="5"
+    fill="url(#ribbonGrad)"/>
+
+  <!-- Ribbon center border -->
+  <rect x="69" y="198" width="82" height="40" rx="5"
+    fill="none" stroke="#8b5e08" stroke-width="1" opacity="0.7"/>
+
+  <!-- Ribbon top highlight -->
+  <rect x="69" y="198" width="82" height="8" rx="5"
+    fill="#f5d060" opacity="0.15"/>
+
+  <!-- RAM COACHING CLASSES text on ribbon -->
+  <text x="110" y="213" text-anchor="middle"
+    font-family="Georgia, 'Times New Roman', serif"
+    font-size="8.5" font-weight="700"
+    fill="#3a1e00" letter-spacing="0.8">RAM COACHING</text>
+
+  <text x="110" y="228" text-anchor="middle"
+    font-family="Georgia, 'Times New Roman', serif"
+    font-size="7.5" font-weight="700"
+    fill="#5a3200" letter-spacing="1.5">CLASSES</text>
+
+</svg>

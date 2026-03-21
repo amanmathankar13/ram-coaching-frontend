@@ -92,10 +92,10 @@ export default function Navbar() {
           {/* Logo */}
           <Link to="/" className="navbar-logo" onClick={closeMenu}>
             <RCCLogo size={40} />
-            <div className="navbar-brand">
-              <span className="navbar-brand-main">Ram Coaching</span>
-              <span className="navbar-brand-sub">Classes · Tawanagar</span>
-            </div>
+           <div className="navbar-brand navbar-brand-desktop-only">
+            <span className="navbar-brand-main">Ram Coaching Classes</span>
+            <span className="navbar-brand-sub">📍 Tawanagar</span>
+          </div>
           </Link>
 
           {/* Desktop Nav Links */}

@@ -37,11 +37,11 @@ export default function Footer() {
               </svg>
               <div>
                 <div style={{ fontFamily:"'Cinzel',serif", fontSize:'15px', fontWeight:700, color:'var(--gold)' }}>Ram Coaching Classes</div>
-                <div style={{ fontSize:'11px', color:'var(--text3)' }}>Pimpri, Pune</div>
+                <div style={{ fontSize:'11px', color:'var(--text3)' }}>Tawanagar, M.P</div>
               </div>
             </div>
             <p style={{ fontSize:'14px', color:'var(--text2)', lineHeight:1.7 }}>
-              Pimpri, Pune's trusted coaching for 9th–12th, JEE &amp; NEET. Expert faculty, personalised attention, proven results since 2012.
+              Tawanagar's trusted coaching for 9th–12th, JEE &amp; NEET. Expert faculty, personalised attention, proven results since 2012.
             </p>
           </div>
 
@@ -70,15 +70,15 @@ export default function Footer() {
           {/* Contact */}
           <div>
             <h4 style={{ fontSize:'12px', fontWeight:600, color:'var(--text3)', textTransform:'uppercase', letterSpacing:'.5px', marginBottom:'14px' }}>Contact</h4>
-            <p style={{ fontSize:'14px', color:'var(--text2)', marginBottom:'8px' }}>📍 Pimpri, Pune – 411018</p>
-            <p style={{ fontSize:'14px', color:'var(--text2)', marginBottom:'8px' }}>📞 +91 98765 43210</p>
-            <p style={{ fontSize:'14px', color:'var(--text2)', marginBottom:'8px' }}>✉ info@ramcoaching.in</p>
+            <p style={{ fontSize:'14px', color:'var(--text2)', marginBottom:'8px' }}>📍 Tawanagar – 461551</p>
+            <p style={{ fontSize:'14px', color:'var(--text2)', marginBottom:'8px' }}>📞 +91 94078 52570</p>
+            <p style={{ fontSize:'13px', color:'var(--text2)', marginBottom:'8px' }}>✉ ayushmathankar24@gmail.com</p>
             <p style={{ fontSize:'14px', color:'var(--text2)' }}>🕐 Mon–Sat, 9 AM – 8 PM</p>
           </div>
         </div>
 
         <div style={{ borderTop:'1px solid var(--border)', paddingTop:'20px', display:'flex', justifyContent:'space-between', flexWrap:'wrap', gap:'8px', fontSize:'13px', color:'var(--text3)' }}>
-          <span>© 2025 Ram Coaching Classes, Pimpri, Pune. All rights reserved.</span>
+          <span>© 2025 Ram Coaching Classes, Tawanagar. All rights reserved.</span>
           <span>Made with ♥ for Students</span>
         </div>
       </div>

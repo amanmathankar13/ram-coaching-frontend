@@ -125,6 +125,9 @@ tr:last-child td { border-bottom:none; }
 .notice-body { font-size:13px; color:var(--text2); margin-top:6px; line-height:1.6; }
 .notice-date { font-size:11px; color:var(--text3); margin-top:8px; }
 
+.navbar-brand-main { font-family:'Cinzel',serif; font-size:19px; font-weight:700; color:var(--gold); letter-spacing:1.5px; text-shadow:0 0 20px rgba(212,168,67,.25); white-space:nowrap; }
+.navbar-brand-desktop-only { display:flex; }
+
 /* ── Section Head ────────────────────────────────────────── */
 .sec-head { text-align:center; margin-bottom:40px; }
 .sec-tag { display:inline-block; background:rgba(108,99,255,.12); color:var(--accent2); font-size:11px; font-weight:600; padding:4px 12px; border-radius:20px; letter-spacing:.8px; text-transform:uppercase; margin-bottom:12px; }
@@ -276,8 +279,10 @@ tr:last-child td { border-bottom:none; }
 @media (max-width:480px) {
   :root { --ticker-h:28px; }
 
-  .navbar-brand-main { font-size:14px; }
-  .navbar-brand-sub { display:none; }
+  .navbar-links { display:none !important; }
+  .navbar-desktop-actions { display:none !important; }
+
+  .navbar-brand-desktop-only { display:none !important; }
 
   .card { padding:16px; }
   .btn-lg { padding:12px 18px; font-size:14px; }

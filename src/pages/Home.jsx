@@ -132,7 +132,7 @@ export default function Home() {
           <div style={{ display:'grid', gridTemplateColumns:'repeat(auto-fit,minmax(260px,1fr))', gap:'18px' }}>
             {[
               { quote:'"Ram Coaching ke teachers ne mera JEE dream possible kiya. Concept clarity bahut achi ho gayi."', name:'Aarav Sharma', role:'IIT Bombay' },
-              { quote:'"NEET 720/720 score possible hua sirf unke Biology & Chemistry notes ki wajah se. Best coaching in Pimpri!"', name:'Priya Kulkarni', role:'AIIMS Delhi' },
+              { quote:'"NEET 720/720 score possible hua sirf unke Biology & Chemistry notes ki wajah se. Best coaching in Tawanagar!"', name:'Priya Kulkarni', role:'AIIMS Delhi' },
               { quote:'"10th board mein 98% aaya. DPP aur weekly tests ne bahut help kiya. Highly recommend!"', name:'Sneha Pawar', role:'10th Topper' },
             ].map((t,i) => (
               <div key={i} className="card">

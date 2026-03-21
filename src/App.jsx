@@ -38,7 +38,7 @@ function Layout({ children, noFooter = false }) {
       <main>{children}</main>
       {!noFooter && <Footer />}
       
-        <a href="https://wa.me/919876543210?text=Hi! I want to inquire about Ram Coaching Classes."
+        <a href="https://wa.me/919407852570?text=Hi Ayush ! I want to inquire about Ram Coaching Classes."
         target="_blank"
         rel="noreferrer"
         className="wa-float"
