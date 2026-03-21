@@ -333,9 +333,9 @@ export function Contact() {
   return (
     <div className="container" style={{ paddingTop:'32px', paddingBottom:'60px' }}>
       <SectionHead tag="Find Us" title="Contact Us" />
-      <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:'32px' }}>
+      <div style={{ display:'grid', gridTemplateColumns:'repeat(auto-fit,minmax(280px,1fr))', gap:'28px' }}>
         <div>
-          <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:'16px', marginBottom:'28px' }}>
+          <div style={{ display:'grid', gridTemplateColumns:'repeat(auto-fit,minmax(220px,1fr))', gap:'14px', marginBottom:'28px' }}>
             {[['📍','Address','Near Pimpri Chowk, Pimpri, Pune – 411018, Maharashtra'],['📞','Phone / WhatsApp','+91 98765 43210\nMon–Sat, 9 AM – 8 PM'],['✉️','Email','info@ramcoaching.in\nWe reply within 24 hours'],['🕐','Timings','Coaching: 6 AM – 8:30 PM\nOffice: 9 AM – 6 PM']].map(([icon,title,info]) => (
               <div key={title} className="card">
                 <div style={{ fontSize:'22px', marginBottom:'10px' }}>{icon}</div>
@@ -401,7 +401,7 @@ export function Inquiry() {
     <div className="container" style={{ paddingTop:'32px', paddingBottom:'60px', maxWidth:'700px' }}>
       <SectionHead tag="Admission" title="Inquiry Form" sub="Fill in your details and we'll contact you within 24 hours" />
       <div className="card">
-        <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:'16px' }}>
+        <div style={{ display:'grid', gridTemplateColumns:'repeat(auto-fit,minmax(220px,1fr))', gap:'14px' }}>
           <div className="form-group"><label className="form-label">Student Name *</label><input className="form-input" placeholder="Full Name" value={form.studentName} onChange={set('studentName')} /></div>
           <div className="form-group"><label className="form-label">Parent / Guardian Name</label><input className="form-input" placeholder="Parent Name" value={form.parentName} onChange={set('parentName')} /></div>
           <div className="form-group"><label className="form-label">Mobile Number *</label><input className="form-input" type="tel" placeholder="+91 XXXXX XXXXX" value={form.phone} onChange={set('phone')} /></div>

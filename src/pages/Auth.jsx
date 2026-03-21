@@ -5,67 +5,160 @@ import { useAuth } from '../context/AuthContext'
 import { Alert } from '../components/UI'
 
 export function Login() {
-  const [tab, setTab]       = useState('student')
-  const [email, setEmail]   = useState('')
-  const [pass, setPass]     = useState('')
-  const [error, setError]   = useState('')
+  const [tab, setTab]         = useState('student')
+  const [email, setEmail]     = useState('')
+  const [pass, setPass]       = useState('')
+  const [error, setError]     = useState('')
   const [pending, setPending] = useState(false)
   const [loading, setLoading] = useState(false)
-  const { login } = useAuth()
-  const navigate = useNavigate()
+  const { login }             = useAuth()
+  const navigate              = useNavigate()
 
   const handleLogin = async () => {
-    setError(''); setPending(false); setLoading(true)
+    // Clear previous errors
+    setError('')
+    setPending(false)
+
+    // Basic validation
+    if (!email.trim()) return setError('Please enter your email address.')
+    if (!pass.trim())  return setError('Please enter your password.')
+
+    setLoading(true)
     try {
-      const user = await login(email, pass)
+      const user = await login(email.trim(), pass)
       navigate(user.role === 'admin' ? '/admin' : '/dashboard')
     } catch (err) {
-      const msg = err.response?.data?.message || 'Login failed'
-      if (err.response?.data?.pending) setPending(true)
-      else setError(msg)
-    } finally { setLoading(false) }
+      const msg = err.response?.data?.message
+      if (err.response?.data?.pending) {
+        setPending(true)
+      } else if (err.response?.status === 401) {
+        setError(msg || 'Invalid email or password. Please try again.')
+      } else if (err.response?.status === 403) {
+        setPending(true)
+      } else if (!err.response) {
+        setError('Cannot connect to server. Please check your internet connection.')
+      } else {
+        setError(msg || 'Login failed. Please try again.')
+      }
+    } finally {
+      setLoading(false)
+    }
   }
 
   return (
-    <div style={{ minHeight: '80vh', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '40px 24px' }}>
-      <div style={{ width: '100%', maxWidth: '420px' }}>
-        <div style={{ textAlign: 'center', marginBottom: '32px' }}>
+    <div style={{ minHeight:'80vh', display:'flex', alignItems:'center', justifyContent:'center', padding:'40px 24px' }}>
+      <div style={{ width:'100%', maxWidth:'420px' }}>
+
+        <div style={{ textAlign:'center', marginBottom:'32px' }}>
           <div className="sec-tag">Portal</div>
-          <h1 style={{ fontSize: '32px', fontWeight: 700, marginTop: '8px' }}>Login</h1>
+          <h1 style={{ fontSize:'32px', fontWeight:700, marginTop:'8px' }}>Login</h1>
         </div>
 
         <div className="card">
           {/* Tabs */}
-          <div style={{ display: 'flex', background: 'var(--bg3)', borderRadius: '8px', padding: '3px', marginBottom: '28px' }}>
+          <div style={{ display:'flex', background:'var(--bg3)', borderRadius:'8px', padding:'3px', marginBottom:'28px' }}>
             {[['student','👨‍🎓 Student'],['teacher','👨‍🏫 Teacher / Admin']].map(([key, label]) => (
-              <button key={key} onClick={() => setTab(key)} style={{
-                flex: 1, padding: '8px', textAlign: 'center', borderRadius: '6px',
-                fontSize: '13px', fontWeight: 500, cursor: 'pointer', border: 'none',
-                background: tab === key ? 'var(--surface)' : 'transparent',
-                color: tab === key ? 'var(--text)' : 'var(--text2)', transition: 'all .2s'
+              <button key={key} onClick={() => { setTab(key); setError(''); setPending(false) }} style={{
+                flex:1, padding:'8px', textAlign:'center', borderRadius:'6px',
+                fontSize:'13px', fontWeight:500, cursor:'pointer', border:'none',
+                background: tab===key ? 'var(--surface)' : 'transparent',
+                color: tab===key ? 'var(--text)' : 'var(--text2)',
+                transition:'all .2s'
               }}>{label}</button>
             ))}
           </div>
 
+          {/* Email */}
           <div className="form-group">
             <label className="form-label">Email</label>
-            <input className="form-input" type="email" placeholder={tab === 'teacher' ? 'teacher@ramcoaching.in' : 'student@email.com'} value={email} onChange={e => setEmail(e.target.value)} />
+            <input
+              className="form-input"
+              type="email"
+              placeholder={tab==='teacher' ? 'teacher@ramcoaching.in' : 'student@email.com'}
+              value={email}
+              onChange={e => { setEmail(e.target.value); setError('') }}
+              style={{ borderColor: error && !email ? 'var(--red)' : '' }}
+            />
           </div>
+
+          {/* Password */}
           <div className="form-group">
             <label className="form-label">Password</label>
-            <input className="form-input" type="password" placeholder="••••••••" value={pass} onChange={e => setPass(e.target.value)} onKeyDown={e => e.key === 'Enter' && handleLogin()} />
+            <input
+              className="form-input"
+              type="password"
+              placeholder="••••••••"
+              value={pass}
+              onChange={e => { setPass(e.target.value); setError('') }}
+              onKeyDown={e => e.key === 'Enter' && handleLogin()}
+              style={{ borderColor: error && !pass ? 'var(--red)' : '' }}
+            />
           </div>
 
-          {error && <Alert type="danger" style={{ marginBottom: '16px' }}>{error}</Alert>}
-          {pending && <Alert type="warn" style={{ marginBottom: '16px' }}>⏳ Your account is pending teacher approval. You will be notified when access is granted.</Alert>}
+          {/* ERROR BOX — shown when credentials are wrong */}
+          {error && (
+            <div style={{
+              display: 'flex',
+              alignItems: 'flex-start',
+              gap: '10px',
+              background: 'rgba(239,68,68,0.10)',
+              border: '1px solid rgba(239,68,68,0.35)',
+              borderRadius: '8px',
+              padding: '12px 14px',
+              marginBottom: '16px',
+              animation: 'fadeUp .3s ease',
+            }}>
+              <span style={{ fontSize:'18px', flexShrink:0 }}>❌</span>
+              <div>
+                <div style={{ fontWeight:600, fontSize:'13px', color:'var(--red)', marginBottom:'2px' }}>Login Failed</div>
+                <div style={{ fontSize:'13px', color:'var(--red)', opacity:.9, lineHeight:1.5 }}>{error}</div>
+              </div>
+            </div>
+          )}
 
-          <button className="btn btn-primary btn-full" onClick={handleLogin} disabled={loading}>
-            {loading ? 'Logging in...' : 'Login →'}
+          {/* PENDING BOX — shown when account not yet approved */}
+          {pending && (
+            <div style={{
+              display: 'flex',
+              alignItems: 'flex-start',
+              gap: '10px',
+              background: 'rgba(245,158,11,0.10)',
+              border: '1px solid rgba(245,158,11,0.35)',
+              borderRadius: '8px',
+              padding: '12px 14px',
+              marginBottom: '16px',
+              animation: 'fadeUp .3s ease',
+            }}>
+              <span style={{ fontSize:'18px', flexShrink:0 }}>⏳</span>
+              <div>
+                <div style={{ fontWeight:600, fontSize:'13px', color:'var(--gold)', marginBottom:'2px' }}>Account Pending Approval</div>
+                <div style={{ fontSize:'13px', color:'var(--gold)', opacity:.9, lineHeight:1.5 }}>
+                  Your registration is waiting for teacher approval. You will receive an email once approved.
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* Login Button */}
+          <button
+            className="btn btn-primary btn-full"
+            onClick={handleLogin}
+            disabled={loading}
+            style={{ opacity: loading ? .7 : 1 }}
+          >
+            {loading ? (
+              <span style={{ display:'flex', alignItems:'center', gap:'8px', justifyContent:'center' }}>
+                <span style={{ width:'16px', height:'16px', border:'2px solid rgba(255,255,255,.3)', borderTopColor:'#fff', borderRadius:'50%', animation:'spin .7s linear infinite', display:'inline-block' }}/>
+                Logging in...
+              </span>
+            ) : (
+              `Login as ${tab === 'teacher' ? 'Admin' : 'Student'} →`
+            )}
           </button>
 
           {tab === 'student' && (
-            <div style={{ textAlign: 'center', marginTop: '16px', fontSize: '13px', color: 'var(--text3)' }}>
-              New student? <Link to="/register" style={{ color: 'var(--accent)', textDecoration: 'none' }}>Register here</Link>
+            <div style={{ textAlign:'center', marginTop:'16px', fontSize:'13px', color:'var(--text3)' }}>
+              New student? <Link to="/register" style={{ color:'var(--accent)', textDecoration:'none', fontWeight:500 }}>Register here</Link>
             </div>
           )}
         </div>

@@ -18,12 +18,17 @@ export function AuthProvider({ children }) {
   }, [])
 
   const login = async (email, password) => {
+    try {
     const { data } = await api.post('/auth/login', { email, password })
     localStorage.setItem('token', data.token)
     localStorage.setItem('user', JSON.stringify(data.user))
     api.defaults.headers.common['Authorization'] = `Bearer ${data.token}`
     setUser(data.user)
     return data.user
+    } catch (err) {
+      console.log('Login error:', err)
+      throw new Error('Login failed. Please try again.')
+    }
   }
 
   const logout = () => {
