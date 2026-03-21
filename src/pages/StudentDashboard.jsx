@@ -202,9 +202,9 @@ export default function StudentDashboard() {
             <div className="dash-title">My DPP — 7 Day Report</div>
 
             {/* Today's DPP button */}
-            <a href="/dpp" className="btn btn-primary" style={{ marginBottom:'24px', display:'inline-flex' }}>
-              📝 Attempt Today's DPP →
-            </a>
+            <Link to="/dpp" className="btn btn-primary" style={{ marginBottom:'20px', display:'inline-flex' }}>
+            📝 Attempt Today's DPP →
+          </Link>
 
             {/* Weekly summary cards */}
             {!reportLoad && dppReport.length > 0 && (() => {
