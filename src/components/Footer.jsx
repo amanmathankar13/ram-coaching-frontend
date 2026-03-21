@@ -78,7 +78,7 @@ export default function Footer() {
         </div>
 
         <div style={{ borderTop:'1px solid var(--border)', paddingTop:'20px', display:'flex', justifyContent:'space-between', flexWrap:'wrap', gap:'8px', fontSize:'13px', color:'var(--text3)' }}>
-          <span>© 2025 Ram Coaching Classes, Tawanagar. All rights reserved.</span>
+          <span>© 2026 Ayush Mathankar, Tawanagar. All rights reserved.</span>
           <span>Made with ♥ for Students</span>
         </div>
       </div>
