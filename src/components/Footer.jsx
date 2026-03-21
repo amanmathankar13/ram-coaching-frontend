@@ -8,33 +8,15 @@ export default function Footer() {
           {/* About */}
           <div>
             <div style={{ display:'flex', alignItems:'center', gap:'10px', marginBottom:'14px' }}>
-              <svg width="34" height="38" viewBox="0 0 220 250" xmlns="http://www.w3.org/2000/svg">
-                <defs>
-                  <linearGradient id="fshHL" x1="0%" y1="0%" x2="100%" y2="0%">
-                    <stop offset="0%" stopColor="#d44808"/><stop offset="49%" stopColor="#c03a00"/>
-                    <stop offset="51%" stopColor="#f08030"/><stop offset="100%" stopColor="#e06010"/>
-                  </linearGradient>
-                  <linearGradient id="fgRing" x1="0%" y1="0%" x2="100%" y2="100%">
-                    <stop offset="0%" stopColor="#f5d060"/><stop offset="40%" stopColor="#d4a020"/>
-                    <stop offset="70%" stopColor="#f0c030"/><stop offset="100%" stopColor="#b87e10"/>
-                  </linearGradient>
-                  <linearGradient id="fcGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-                    <stop offset="0%" stopColor="#8b3a0a"/><stop offset="100%" stopColor="#5c2006"/>
-                  </linearGradient>
-                  <linearGradient id="fribGrad" x1="0%" y1="0%" x2="0%" y2="100%">
-                    <stop offset="0%" stopColor="#f0c030"/><stop offset="50%" stopColor="#d4a020"/>
-                    <stop offset="100%" stopColor="#8b5e08"/>
-                  </linearGradient>
-                </defs>
-                <path d="M110 8 L205 45 L205 130 Q205 195 110 235 Q15 195 15 130 L15 45 Z" fill="url(#fshHL)" stroke="url(#fgRing)" strokeWidth="5"/>
-                <circle cx="110" cy="115" r="73" fill="none" stroke="url(#fgRing)" strokeWidth="9"/>
-                <circle cx="110" cy="115" r="64" fill="url(#fcGrad)"/>
-                <text x="108" y="132" textAnchor="middle" fontFamily="Georgia,serif" fontSize="48" fontWeight="700" fill="url(#fgRing)" letterSpacing="-2">RCC</text>
-                <path d="M25 208 Q52 196 78 207 L78 232 Q52 224 25 234 Z" fill="url(#fribGrad)"/>
-                <path d="M142 207 Q168 196 195 208 L195 234 Q168 224 142 232 Z" fill="url(#fribGrad)"/>
-                <rect x="70" y="199" width="80" height="38" rx="5" fill="url(#fribGrad)"/>
-                <text x="110" y="223" textAnchor="middle" fontFamily="Georgia,serif" fontSize="10.5" fontWeight="700" fill="#3a1e00">RCC</text>
-              </svg>
+               <img
+                src="/logo.png"
+                alt="Ram Coaching Classes"
+                style={{
+                  height: '48px',
+                  width: 'auto',
+                  objectFit: 'contain',
+                }}
+              />
               <div>
                 <div style={{ fontFamily:"'Cinzel',serif", fontSize:'15px', fontWeight:700, color:'var(--gold)' }}>Ram Coaching Classes</div>
                 <div style={{ fontSize:'11px', color:'var(--text3)' }}>Tawanagar, M.P</div>

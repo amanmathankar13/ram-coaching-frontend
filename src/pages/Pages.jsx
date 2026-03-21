@@ -241,8 +241,10 @@ const CLASS_DATA = {
       { name:'Science',     color:'var(--cyan)',   tags:['Physics Basics','Chemical Reactions','Life Processes'] },
       { name:'English',     color:'var(--gold)',   tags:['Grammar','Literature','Writing Skills'] },
       { name:'SST',         color:'var(--pink)',   tags:['History','Geography','Civics','Economics'] },
+      { name:'Hindi',          color:'var(--pink)',   tags:['Board Focus','Grammar','Literature','Writing'] },
+      { name:'Sanskrit',          color:'var(--pink)',   tags:['Board Focus','Grammar','Literature','Writing'] }
     ],
-    schedule: [['Monday','Mathematics','4:00–5:30 PM'],['Tuesday','Science','4:00–5:30 PM'],['Wednesday','English','4:00–5:00 PM'],['Thursday','Mathematics','4:00–5:30 PM'],['Friday','Science','4:00–5:30 PM'],['Saturday','Test/Revision','10:00 AM–12:00 PM']],
+    schedule: [['Monday','Mathematics','4:00–5:30 PM'],['Tuesday','Science','4:00–5:30 PM'],['Wednesday','English','4:00–5:00 PM'],['Thursday','Mathematics','4:00–5:30 PM'],['Friday','Science','4:00–5:30 PM'],['Saturday','Test/Revision','4:00–5:30 PM'], ['Sunday','Test/Revision','10:00 AM–12:00 PM']],
   },
   '10': {
     subjects: [
@@ -250,8 +252,10 @@ const CLASS_DATA = {
       { name:'Science (PCB)',color:'var(--cyan)',   tags:['Electricity','Light','Chemical Reactions','Life Processes'] },
       { name:'English',      color:'var(--gold)',   tags:['Board Focus','Grammar','Literature','Writing'] },
       { name:'SST',          color:'var(--pink)',   tags:['History','Political Science','Economics','Geography'] },
+      { name:'Hindi',          color:'var(--pink)',   tags:['Board Focus','Grammar','Literature','Writing'] },
+      { name:'Sanskrit',          color:'var(--pink)',   tags:['Board Focus','Grammar','Literature','Writing'] }
     ],
-    schedule: [['Monday','Mathematics','5:00–6:30 PM'],['Tuesday','Science','5:00–6:30 PM'],['Wednesday','English / SST','5:00–6:00 PM'],['Thursday','Mathematics','5:00–6:30 PM'],['Friday','Science','5:00–6:30 PM'],['Saturday','Board Mock Test','9:00 AM–12:00 PM']],
+    schedule: [['Monday','Mathematics','5:00–6:30 PM'],['Tuesday','Science','5:00–6:30 PM'],['Wednesday','English / SST','5:00–6:00 PM'],['Thursday','Mathematics','5:00–6:30 PM'],['Friday','Science','5:00–6:30 PM'],['Saturday','Board Mock Test','5:00–6:30 PM'], ['Sunday','Test/Revision','10:00 AM–12:00 PM']],
   },
   '11': {
     subjects: [
@@ -260,7 +264,7 @@ const CLASS_DATA = {
       { name:'Maths',     color:'var(--accent)', tags:['Sets','Trigonometry','Complex Numbers','Binomial','Limits'] },
       { name:'Biology',   color:'var(--pink)',   tags:['Cell Biology','Biomolecules','Transport in Plants','Photosynthesis'] },
     ],
-    schedule: [['Monday','Physics','6:00–7:30 AM'],['Tuesday','Chemistry','6:00–7:30 AM'],['Wednesday','Maths / Bio','6:00–7:30 AM'],['Thursday','Physics','6:00–7:30 AM'],['Friday','Chemistry','6:00–7:30 AM'],['Saturday','Weekly Test','10:00 AM–12:00 PM']],
+    schedule: [['Monday','Physics','6:00–7:30 AM'],['Tuesday','Chemistry','6:00–7:30 AM'],['Wednesday','Maths / Bio','6:00–7:30 AM'],['Thursday','Physics','6:00–7:30 AM'],['Friday','Chemistry','6:00–7:30 AM'],['Saturday','Weekly Test','6:00–7:30 PM'], ['Sunday','Test/Revision','10:00 AM–12:00 PM']],
   },
   '12': {
     subjects: [
@@ -269,7 +273,7 @@ const CLASS_DATA = {
       { name:'Maths',     color:'var(--accent)', tags:['Calculus','Matrices','Vectors','3D Geometry','Linear Programming','Probability'] },
       { name:'Biology',   color:'var(--pink)',   tags:['Genetics','Reproduction','Biotechnology','Ecology','Evolution'] },
     ],
-    schedule: [['Monday','Physics','6:00–7:30 AM'],['Tuesday','Chemistry','6:00–7:30 AM'],['Wednesday','Maths / Bio','6:00–7:30 AM'],['Thursday','Physics','6:00–7:30 AM'],['Friday','Chemistry','6:00–7:30 AM'],['Saturday','Board + Entrance Mock','10:00 AM–1:00 PM']],
+    schedule: [['Monday','Physics','6:00–7:30 AM'],['Tuesday','Chemistry','6:00–7:30 AM'],['Wednesday','Maths / Bio','6:00–7:30 AM'],['Thursday','Physics','6:00–7:30 AM'],['Friday','Chemistry','6:00–7:30 AM'],['Saturday','Board + Entrance Mock','6:00–7:30 PM'], ['Sunday','Test/Revision','10:00 AM–12:00 PM']],
   },
 }
 
@@ -282,7 +286,7 @@ export function Classes() {
       <div style={{ display:'flex', gap:'8px', marginBottom:'32px', justifyContent:'center', flexWrap:'wrap' }}>
         {['9','10','11','12'].map(c => (
           <button key={c} className={`btn ${cls===c ? 'btn-primary' : 'btn-outline'}`} onClick={() => setCls(c)}>
-            Class {c}{c==='9'||c==='10'?' (SSC)':' (Science)'}
+            Class {c}{c==='9'||c==='10'?' (NCERT)':' (Science)'}
           </button>
         ))}
       </div>
@@ -543,7 +547,7 @@ export function Inquiry() {
           <div className="form-group"><label className="form-label">Target Exam</label>
             <select className="form-input" value={form.targetExam} onChange={set('targetExam')}>
               <option value="">Select (optional)</option>
-              {['JEE Mains','JEE Advanced','NEET UG','SSC / HSC Board'].map(e => <option key={e}>{e}</option>)}
+              {['JEE Mains','JEE Advanced','NEET UG','MP Board'].map(e => <option key={e}>{e}</option>)}
             </select>
           </div>
         </div>

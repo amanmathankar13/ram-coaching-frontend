@@ -39,7 +39,7 @@ export default function Home() {
               </div>
 
               <div style={{ display:'flex', gap:'clamp(20px,4vw,40px)', marginTop:'36px', flexWrap:'wrap' }}>
-                {[['500+','Students Enrolled'],['12+','Years Experience'],['95%','Success Rate']].map(([v,l]) => (
+                {[['50+','Students Enrolled'],['2+','Years Experience'],['100%','Success Rate']].map(([v,l]) => (
                   <div key={l}>
                     <div style={{ fontFamily:'var(--font-head)', fontSize:'clamp(22px,3vw,28px)', fontWeight:700 }}>{v}</div>
                     <div style={{ fontSize:'12px', color:'var(--text3)', marginTop:'3px' }}>{l}</div>
@@ -108,9 +108,9 @@ export default function Home() {
         <div className="container">
           <SectionHead tag="Exam Countdown" title="Days Remaining" />
           <div style={{ display:'grid', gridTemplateColumns:'repeat(auto-fit,minmax(200px,1fr))', gap:'16px' }}>
-            <Countdown targetDate="2025-04-06" name="⚡ JEE Mains"  color="var(--gold)"  />
-            <Countdown targetDate="2025-05-04" name="🧬 NEET UG"   color="var(--green)" />
-            <Countdown targetDate="2025-02-28" name="📋 Board Exam" color="var(--cyan)"  />
+            <Countdown targetDate="2026-04-09" name="⚡ JEE Mains"  color="var(--gold)"  />
+            <Countdown targetDate="2026-05-03" name="🧬 NEET UG"   color="var(--green)" />
+            <Countdown targetDate="2026-05-07" name="📋 Board Exam" color="var(--cyan)"  />
           </div>
         </div>
       </section>
