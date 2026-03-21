@@ -106,7 +106,7 @@ export default function Navbar() {
             textTransform: 'uppercase',
             marginTop: '3px',
           }}>
-            Classes · Pimpri
+            Classes · Tawanagar
           </span>
           </div>
         </Link>

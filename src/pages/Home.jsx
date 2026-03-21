@@ -15,10 +15,6 @@ export default function Home() {
       <section style={{ padding: '80px 0 60px' }}>
         <div className="container" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '60px', alignItems: 'center' }}>
           <div className="fade-up">
-            <div style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', background: 'rgba(108,99,255,.15)', border: '1px solid rgba(108,99,255,.3)', padding: '6px 14px', borderRadius: '20px', marginBottom: '24px' }}>
-              <span style={{ width: '8px', height: '8px', borderRadius: '50%', background: 'var(--accent)', animation: 'pulse 2s infinite', display: 'inline-block' }} />
-              <span style={{ fontSize: '12px', color: 'var(--accent2)', fontWeight: 500 }}>Pimpri, Pune's Leading Coaching</span>
-            </div>
 
             <h1 style={{ fontSize: 'clamp(36px,5vw,64px)', fontWeight: 800, lineHeight: 1.1, marginBottom: '20px' }}>
               Shape Your<br />
