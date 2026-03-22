@@ -1,44 +1,16 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import { SectionHead, FAQItem, TopperCard, Alert } from '../components/UI'
+import api from '../api/api'
 
-// ── Local fallback DPP (used only if backend + AI both fail) ──
-const DPP_FALLBACK = {
-  Physics: [
-    { q:'A ball is thrown vertically upward with initial velocity 20 m/s. What is the maximum height? (g = 10 m/s²)', opts:['10 m','20 m','25 m','40 m'], ans:1, exp:'Using v²=u²-2gh, at max height v=0, so h=u²/2g = 400/20 = 20 m' },
-    { q:'Which law states that every action has equal and opposite reaction?', opts:["Newton's 1st Law","Newton's 2nd Law","Newton's 3rd Law","Law of Gravitation"], ans:2, exp:"Newton's 3rd Law — every action has an equal and opposite reaction." },
-    { q:'The SI unit of force is:', opts:['Joule','Newton','Pascal','Watt'], ans:1, exp:'Newton (N) is the SI unit of force. 1 N = 1 kg·m/s²' },
-    { q:'An object travels 100m in 5 seconds. What is its average speed?', opts:['10 m/s','20 m/s','500 m/s','0.05 m/s'], ans:1, exp:'Speed = Distance/Time = 100/5 = 20 m/s' },
-    { q:'Work done when force is perpendicular to displacement is:', opts:['Maximum','Minimum','Zero','Infinite'], ans:2, exp:'W = F·d·cos(90°) = 0. Perpendicular force does zero work.' },
-  ],
-  Chemistry: [
-    { q:'What is the atomic number of Carbon?', opts:['4','6','8','12'], ans:1, exp:'Carbon has 6 protons, so atomic number = 6.' },
-    { q:'pH of pure water at 25°C is:', opts:['0','7','14','1'], ans:1, exp:'Pure water has equal H⁺ and OH⁻ ions, making pH = 7 (neutral).' },
-    { q:'The IUPAC name of CH₃-CH₂-OH is:', opts:['Methanol','Ethanol','Propanol','Butanol'], ans:1, exp:'CH₃-CH₂-OH has 2 carbons, so it is Ethanol.' },
-    { q:'Which gas is produced when zinc reacts with dilute HCl?', opts:['Oxygen','Chlorine','Hydrogen','Nitrogen'], ans:2, exp:'Zn + 2HCl → ZnCl₂ + H₂↑. Hydrogen gas is released.' },
-    { q:"Avogadro's number is approximately:", opts:['6.02 × 10²³','3.14 × 10²³','9.8 × 10²²','1.6 × 10¹⁹'], ans:0, exp:"Avogadro's number = 6.022 × 10²³ mol⁻¹" },
-  ],
-  Maths: [
-    { q:'What is the derivative of sin(x)?', opts:['-cos(x)','cos(x)','tan(x)','-sin(x)'], ans:1, exp:'d/dx(sin x) = cos x. Standard differentiation formula.' },
-    { q:'The value of ∫x dx is:', opts:['x² + C','x²/2 + C','2x + C','1/x + C'], ans:1, exp:'∫x dx = x²/2 + C by power rule: ∫xⁿ dx = xⁿ⁺¹/(n+1) + C' },
-    { q:'If A is a 3×3 matrix with det(A) = 4, then det(2A) = ?', opts:['8','16','32','64'], ans:2, exp:'det(kA) = kⁿ·det(A) for n×n matrix. det(2A) = 2³ × 4 = 8 × 4 = 32' },
-    { q:'The sum of first n natural numbers is:', opts:['n²','n(n+1)/2','n(n-1)/2','n²/2'], ans:1, exp:'Sum = n(n+1)/2. Standard formula for sum of natural numbers.' },
-    { q:'What is the slope of line: 2x + 4y = 8?', opts:['2','-2','-1/2','1/2'], ans:2, exp:'4y = -2x + 8 → y = -x/2 + 2. Slope = -1/2' },
-  ],
-  Biology: [
-    { q:'Powerhouse of the cell is:', opts:['Nucleus','Ribosome','Mitochondria','Chloroplast'], ans:2, exp:'Mitochondria produces ATP (energy) via cellular respiration — hence called powerhouse.' },
-    { q:'DNA stands for:', opts:['Dioxyribonucleic Acid','Deoxyribonucleic Acid','Diribonucleic Acid','Dinucleotide Acid'], ans:1, exp:'DNA = Deoxyribonucleic Acid. Contains deoxyribose sugar.' },
-    { q:'Photosynthesis occurs in which organelle?', opts:['Mitochondria','Nucleus','Chloroplast','Ribosome'], ans:2, exp:'Chloroplasts contain chlorophyll and are the site of photosynthesis.' },
-    { q:'Which blood group is called universal donor?', opts:['A','B','AB','O'], ans:3, exp:'Blood group O has no antigens, so it can be donated to any blood group.' },
-    { q:'The basic unit of heredity is called:', opts:['Chromosome','Gene','DNA','Nucleotide'], ans:1, exp:'Gene is the basic unit of heredity — a specific sequence of DNA that codes for a trait.' },
-  ],
-}
+// Subject list — no hardcoded questions
+const SUBJECTS = ['Physics', 'Chemistry', 'Maths', 'Biology']
 
-// ── DPP Component — Hybrid AI + Manual ────────────────────────
+// ── DPP Component — AI + Manual only, no hardcoded fallback ───
 export function DPP() {
   const [subject,     setSubject]     = useState('Physics')
-  const [questions,   setQuestions]   = useState(DPP_FALLBACK['Physics'])
-  const [source,      setSource]      = useState('local')   // 'manual' | 'ai' | 'local'
+  const [questions,   setQuestions]   = useState([])
+  const [source,      setSource]      = useState('none')
   const [loading,     setLoading]     = useState(false)
   const [current,     setCurrent]     = useState(0)
   const [score,       setScore]       = useState(0)
@@ -46,40 +18,35 @@ export function DPP() {
   const [explanation, setExplanation] = useState('')
   const [done,        setDone]        = useState(false)
 
-  const switchSubject = async (s) => {
+  // Load on mount
+  useEffect(() => { loadDPP('Physics') }, [])
+
+  const loadDPP = async (s) => {
     setSubject(s)
     setCurrent(0); setScore(0); setSelected(null); setDone(false); setExplanation('')
     setLoading(true)
     try {
-      const { default: api } = await import('../api/api')
-      // GET /api/dpp?subject=Physics
-      // Backend: checks manual first → AI fallback → returns { questions, source }
       const { data } = await api.get(`/dpp?subject=${s}`)
-
       if (data.questions && data.questions.length > 0) {
-        // Normalise backend format → local format { q, opts, ans, exp }
         setQuestions(data.questions.map(item => ({
-          q:   item.question,
+          q:    item.question,
           opts: item.options,
           ans:  item.answerIndex,
           exp:  item.explanation || '',
         })))
-        setSource(data.source)  // 'manual' or 'ai'
+        setSource(data.source)
       } else {
-        // Backend returned empty — use local fallback
-        setQuestions(DPP_FALLBACK[s])
-        setSource('local')
+        setQuestions([])
+        setSource('none')
       }
     } catch {
-      // Backend error — use local fallback silently
-      setQuestions(DPP_FALLBACK[s])
-      setSource('local')
+      setQuestions([])
+      setSource('error')
     } finally {
       setLoading(false)
     }
   }
 
-  // q is always safe — questions initialises from DPP_FALLBACK
   const q = questions[current]
 
   const answer = (idx) => {
@@ -100,13 +67,12 @@ export function DPP() {
       transition:'all .2s', background:'var(--surface)', color:'var(--text)',
       textAlign:'left', width:'100%', fontFamily:'var(--font-body)', border:'1px solid',
     }
-    if (selected === null)                 return { ...base, borderColor:'var(--border)', cursor:'pointer' }
+    if (!q || selected === null)           return { ...base, borderColor:'var(--border)', cursor:'pointer' }
     if (idx === q.ans)                     return { ...base, borderColor:'var(--green)', background:'rgba(16,185,129,.1)', color:'var(--green)', cursor:'default' }
-    if (idx === selected && idx !== q.ans) return { ...base, borderColor:'var(--red)',   background:'rgba(239,68,68,.1)',   color:'var(--red)',   cursor:'default' }
+    if (idx === selected && idx !== q.ans) return { ...base, borderColor:'var(--red)', background:'rgba(239,68,68,.1)', color:'var(--red)', cursor:'default' }
     return { ...base, borderColor:'var(--border)', opacity:.5, cursor:'default' }
   }
 
-  // Source badge
   const SourceBadge = () => {
     if (source === 'manual') return (
       <span style={{ fontSize:'11px', padding:'3px 10px', borderRadius:'20px', background:'rgba(16,185,129,.12)', color:'var(--green)', fontWeight:600 }}>
@@ -118,11 +84,7 @@ export function DPP() {
         🤖 AI Generated
       </span>
     )
-    return (
-      <span style={{ fontSize:'11px', padding:'3px 10px', borderRadius:'20px', background:'rgba(245,158,11,.1)', color:'var(--gold)', fontWeight:600 }}>
-        📚 Practice Questions
-      </span>
-    )
+    return null
   }
 
   return (
@@ -131,29 +93,49 @@ export function DPP() {
 
       {/* Subject tabs */}
       <div style={{ display:'flex', gap:'8px', justifyContent:'center', marginBottom:'16px', flexWrap:'wrap' }}>
-        {Object.keys(DPP_FALLBACK).map(s => (
+        {SUBJECTS.map(s => (
           <button key={s}
             className={`btn btn-sm ${subject === s ? 'btn-primary' : 'btn-outline'}`}
-            onClick={() => switchSubject(s)}>
+            onClick={() => loadDPP(s)}>
             {s}
           </button>
         ))}
       </div>
 
       {/* Source indicator */}
-      <div style={{ textAlign:'center', marginBottom:'24px' }}>
-        <SourceBadge />
-      </div>
+      {source !== 'none' && source !== 'error' && (
+        <div style={{ textAlign:'center', marginBottom:'24px' }}>
+          <SourceBadge />
+        </div>
+      )}
 
+      {/* Loading */}
       {loading ? (
         <div style={{ textAlign:'center', padding:'48px 20px' }}>
-          <div style={{ fontSize:'32px', marginBottom:'12px' }}>
-            {source === 'ai' ? '🤖' : '⏳'}
-          </div>
+          <div style={{ fontSize:'32px', marginBottom:'12px' }}>⏳</div>
           <div style={{ color:'var(--text2)', fontSize:'14px' }}>
-            {source === 'ai' ? 'AI is generating fresh questions for you...' : 'Loading questions...'}
+            Loading questions...
           </div>
         </div>
+
+      /* No questions */
+      ) : questions.length === 0 ? (
+        <div className="card" style={{ textAlign:'center', padding:'40px' }}>
+          <div style={{ fontSize:'40px', marginBottom:'14px' }}>📭</div>
+          <div style={{ fontSize:'17px', fontWeight:600, color:'var(--text2)', marginBottom:'10px' }}>
+            No questions available
+          </div>
+          <p style={{ color:'var(--text3)', fontSize:'14px', marginBottom:'24px', lineHeight:1.6 }}>
+            {source === 'error'
+              ? 'Could not connect to server. Please check your internet and try again.'
+              : 'Your teacher has not added questions for today yet. Please check back later.'}
+          </p>
+          <button className="btn btn-outline" onClick={() => loadDPP(subject)}>
+            🔄 Try Again
+          </button>
+        </div>
+
+      /* Quiz in progress */
       ) : !done ? (
         q && (
           <div className="card">
@@ -165,22 +147,21 @@ export function DPP() {
                 Score: {score}
               </span>
             </div>
-
-            {/* Progress bar */}
             <div className="progress-bar" style={{ marginBottom:'20px' }}>
               <div className="progress-fill" style={{ width:`${(current / questions.length) * 100}%` }} />
             </div>
-
-            {/* Question */}
             <p style={{ fontSize:'16px', marginBottom:'20px', lineHeight:1.6, fontWeight:500 }}>
               {q.q}
             </p>
-
-            {/* Options */}
             <div style={{ display:'flex', flexDirection:'column', gap:'10px' }}>
               {q.opts.map((opt, i) => (
                 <button key={i} style={getOptStyle(i)} onClick={() => answer(i)}>
-                  <span style={{ fontWeight:600, marginRight:'8px', color: selected !== null && i === q.ans ? 'var(--green)' : selected !== null && i === selected && i !== q.ans ? 'var(--red)' : 'var(--text3)' }}>
+                  <span style={{
+                    fontWeight:600, marginRight:'8px',
+                    color: selected !== null && i === q.ans ? 'var(--green)'
+                         : selected !== null && i === selected && i !== q.ans ? 'var(--red)'
+                         : 'var(--text3)'
+                  }}>
                     {String.fromCharCode(65+i)}.
                   </span>
                   {opt}
@@ -190,8 +171,6 @@ export function DPP() {
                 </button>
               ))}
             </div>
-
-            {/* Explanation — shown after answering */}
             {explanation && (
               <div style={{
                 marginTop:'14px', padding:'12px 16px',
@@ -206,6 +185,8 @@ export function DPP() {
             )}
           </div>
         )
+
+      /* Result screen */
       ) : (
         <div className="card" style={{ textAlign:'center', padding:'40px' }}>
           <div style={{ fontSize:'52px', marginBottom:'16px' }}>🎉</div>
@@ -213,16 +194,20 @@ export function DPP() {
             {score} / {questions.length}
           </div>
           <p style={{ color:'var(--text2)', marginBottom:'8px' }}>
-            {score === questions.length ? 'Perfect score! Outstanding!' : score >= Math.ceil(questions.length * 0.6) ? 'Great job! Keep it up!' : 'Keep practicing — you will get there!'}
+            {score === questions.length
+              ? 'Perfect score! Outstanding!'
+              : score >= Math.ceil(questions.length * 0.6)
+              ? 'Great job! Keep it up!'
+              : 'Keep practicing — you will get there!'}
           </p>
           <p style={{ fontSize:'12px', color:'var(--text3)', marginBottom:'24px' }}>
-            {source === 'manual' ? '✏️ Questions set by your teacher' : source === 'ai' ? '🤖 AI generated questions' : '📚 Practice questions'}
+            {source === 'manual' ? '✏️ Questions set by your teacher' : '🤖 AI generated questions'}
           </p>
-          <button className="btn btn-primary" onClick={() => switchSubject(subject)}>Try Again</button>
+          <button className="btn btn-primary" onClick={() => loadDPP(subject)}>Try Again</button>
           <div style={{ marginTop:'12px' }}>
-            {Object.keys(DPP_FALLBACK).filter(s => s !== subject).map(s => (
+            {SUBJECTS.filter(s => s !== subject).map(s => (
               <button key={s} className="btn btn-outline btn-sm" style={{ margin:'4px' }}
-                onClick={() => switchSubject(s)}>
+                onClick={() => loadDPP(s)}>
                 Try {s}
               </button>
             ))}
@@ -233,6 +218,7 @@ export function DPP() {
   )
 }
 
+
 // ── Classes Page ──────────────────────────────────────────────
 const CLASS_DATA = {
   '9': {
@@ -241,10 +227,10 @@ const CLASS_DATA = {
       { name:'Science',     color:'var(--cyan)',   tags:['Physics Basics','Chemical Reactions','Life Processes'] },
       { name:'English',     color:'var(--gold)',   tags:['Grammar','Literature','Writing Skills'] },
       { name:'SST',         color:'var(--pink)',   tags:['History','Geography','Civics','Economics'] },
-      { name:'Hindi',          color:'var(--pink)',   tags:['Board Focus','Grammar','Literature','Writing'] },
-      { name:'Sanskrit',          color:'var(--pink)',   tags:['Board Focus','Grammar','Literature','Writing'] }
+      { name:'Hindi',       color:'var(--pink)',   tags:['Board Focus','Grammar','Literature','Writing'] },
+      { name:'Sanskrit',    color:'var(--pink)',   tags:['Board Focus','Grammar','Literature','Writing'] }
     ],
-    schedule: [['Monday','Mathematics','4:00–5:30 PM'],['Tuesday','Science','4:00–5:30 PM'],['Wednesday','English','4:00–5:00 PM'],['Thursday','Mathematics','4:00–5:30 PM'],['Friday','Science','4:00–5:30 PM'],['Saturday','Test/Revision','4:00–5:30 PM'], ['Sunday','Test/Revision','10:00 AM–12:00 PM']],
+    schedule: [['Monday','Mathematics','4:00–5:30 PM'],['Tuesday','Science','4:00–5:30 PM'],['Wednesday','English','4:00–5:00 PM'],['Thursday','Mathematics','4:00–5:30 PM'],['Friday','Science','4:00–5:30 PM'],['Saturday','Test/Revision','4:00–5:30 PM'],['Sunday','Test/Revision','10:00 AM–12:00 PM']],
   },
   '10': {
     subjects: [
@@ -252,10 +238,10 @@ const CLASS_DATA = {
       { name:'Science (PCB)',color:'var(--cyan)',   tags:['Electricity','Light','Chemical Reactions','Life Processes'] },
       { name:'English',      color:'var(--gold)',   tags:['Board Focus','Grammar','Literature','Writing'] },
       { name:'SST',          color:'var(--pink)',   tags:['History','Political Science','Economics','Geography'] },
-      { name:'Hindi',          color:'var(--pink)',   tags:['Board Focus','Grammar','Literature','Writing'] },
-      { name:'Sanskrit',          color:'var(--pink)',   tags:['Board Focus','Grammar','Literature','Writing'] }
+      { name:'Hindi',        color:'var(--pink)',   tags:['Board Focus','Grammar','Literature','Writing'] },
+      { name:'Sanskrit',     color:'var(--pink)',   tags:['Board Focus','Grammar','Literature','Writing'] }
     ],
-    schedule: [['Monday','Mathematics','5:00–6:30 PM'],['Tuesday','Science','5:00–6:30 PM'],['Wednesday','English / SST','5:00–6:00 PM'],['Thursday','Mathematics','5:00–6:30 PM'],['Friday','Science','5:00–6:30 PM'],['Saturday','Board Mock Test','5:00–6:30 PM'], ['Sunday','Test/Revision','10:00 AM–12:00 PM']],
+    schedule: [['Monday','Mathematics','5:00–6:30 PM'],['Tuesday','Science','5:00–6:30 PM'],['Wednesday','English / SST','5:00–6:00 PM'],['Thursday','Mathematics','5:00–6:30 PM'],['Friday','Science','5:00–6:30 PM'],['Saturday','Board Mock Test','5:00–6:30 PM'],['Sunday','Test/Revision','10:00 AM–12:00 PM']],
   },
   '11': {
     subjects: [
@@ -264,7 +250,7 @@ const CLASS_DATA = {
       { name:'Maths',     color:'var(--accent)', tags:['Sets','Trigonometry','Complex Numbers','Binomial','Limits'] },
       { name:'Biology',   color:'var(--pink)',   tags:['Cell Biology','Biomolecules','Transport in Plants','Photosynthesis'] },
     ],
-    schedule: [['Monday','Physics','6:00–7:30 AM'],['Tuesday','Chemistry','6:00–7:30 AM'],['Wednesday','Maths / Bio','6:00–7:30 AM'],['Thursday','Physics','6:00–7:30 AM'],['Friday','Chemistry','6:00–7:30 AM'],['Saturday','Weekly Test','6:00–7:30 PM'], ['Sunday','Test/Revision','10:00 AM–12:00 PM']],
+    schedule: [['Monday','Physics','6:00–7:30 AM'],['Tuesday','Chemistry','6:00–7:30 AM'],['Wednesday','Maths / Bio','6:00–7:30 AM'],['Thursday','Physics','6:00–7:30 AM'],['Friday','Chemistry','6:00–7:30 AM'],['Saturday','Weekly Test','6:00–7:30 PM'],['Sunday','Test/Revision','10:00 AM–12:00 PM']],
   },
   '12': {
     subjects: [
@@ -273,7 +259,7 @@ const CLASS_DATA = {
       { name:'Maths',     color:'var(--accent)', tags:['Calculus','Matrices','Vectors','3D Geometry','Linear Programming','Probability'] },
       { name:'Biology',   color:'var(--pink)',   tags:['Genetics','Reproduction','Biotechnology','Ecology','Evolution'] },
     ],
-    schedule: [['Monday','Physics','6:00–7:30 AM'],['Tuesday','Chemistry','6:00–7:30 AM'],['Wednesday','Maths / Bio','6:00–7:30 AM'],['Thursday','Physics','6:00–7:30 AM'],['Friday','Chemistry','6:00–7:30 AM'],['Saturday','Board + Entrance Mock','6:00–7:30 PM'], ['Sunday','Test/Revision','10:00 AM–12:00 PM']],
+    schedule: [['Monday','Physics','6:00–7:30 AM'],['Tuesday','Chemistry','6:00–7:30 AM'],['Wednesday','Maths / Bio','6:00–7:30 AM'],['Thursday','Physics','6:00–7:30 AM'],['Friday','Chemistry','6:00–7:30 AM'],['Saturday','Board + Entrance Mock','6:00–7:30 PM'],['Sunday','Test/Revision','10:00 AM–12:00 PM']],
   },
 }
 
@@ -510,7 +496,6 @@ export function Inquiry() {
     if (!form.class)              return setError('Please select a class.')
     setError(''); setLoading(true)
     try {
-      const { default: api } = await import('../api/api')
       await api.post('/inquiry', form)
       setSuccess(true)
     } catch (err) {
