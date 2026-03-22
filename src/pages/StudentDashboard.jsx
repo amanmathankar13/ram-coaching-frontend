@@ -202,7 +202,7 @@ export default function StudentDashboard() {
             <div className="dash-title">My DPP — 7 Day Report</div>
 
             {/* Today's DPP button */}
-            <Link href="/dpp" className="btn btn-primary" style={{ marginBottom:'24px', display:'inline-flex' }}>
+            <Link to="/dpp" className="btn btn-primary" style={{ marginBottom:'24px', display:'inline-flex' }}>
               📝 Attempt Today's DPP →
             </Link>
 
