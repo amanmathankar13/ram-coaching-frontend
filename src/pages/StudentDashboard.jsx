@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { useAuth } from '../context/AuthContext'
-import { Link, useNavigate } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom'
 import api from '../api/api'
 import { Spinner, Alert } from '../components/UI'
 
@@ -41,6 +41,8 @@ export default function StudentDashboard() {
   const [selectedSubject, setSelectedSubject] = useState('Physics 12')
   const [dppReport,   setDppReport]   = useState([])
   const [reportLoad,  setReportLoad]  = useState(false)
+  const [timetable,   setTimetable]   = useState([])
+  const [ttLoad,      setTtLoad]      = useState(false)
 
   useEffect(() => {
     if (!user) { navigate('/login'); return }
@@ -48,6 +50,7 @@ export default function StudentDashboard() {
     fetchMaterials()
     fetchNotices()
     fetchDppReport()
+    fetchTimetable()
     const saved = JSON.parse(localStorage.getItem('chapter_progress') || '{}')
     setCheckedChapters(saved)
   }, [user])
@@ -93,6 +96,18 @@ export default function StudentDashboard() {
       console.error('DPP report failed:', err.message)
       setDppReport([])
     } finally { setReportLoad(false) }
+  }
+
+  // GET /api/timetable?class=12-PCM — student's timetable
+  const fetchTimetable = async () => {
+    setTtLoad(true)
+    try {
+      const { data } = await api.get('/timetable')
+      setTimetable(Array.isArray(data) ? data : [])
+    } catch (err) {
+      console.error('Timetable fetch failed:', err.message)
+      setTimetable([])
+    } finally { setTtLoad(false) }
   }
 
   const toggleChapter = (subject, chapter) => {
@@ -202,9 +217,9 @@ export default function StudentDashboard() {
             <div className="dash-title">My DPP — 7 Day Report</div>
 
             {/* Today's DPP button */}
-            <Link to="/dpp" className="btn btn-primary" style={{ marginBottom:'24px', display:'inline-flex' }}>
+            <a href="/dpp" className="btn btn-primary" style={{ marginBottom:'24px', display:'inline-flex' }}>
               📝 Attempt Today's DPP →
-            </Link>
+            </a>
 
             {/* Weekly summary cards */}
             {!reportLoad && dppReport.length > 0 && (() => {
@@ -325,23 +340,27 @@ export default function StudentDashboard() {
         {section === 'schedule' && (
           <div className="fade-in">
             <div className="dash-title">My Class Schedule</div>
-            <div className="table-wrap">
-              <table>
-                <thead>
-                  <tr><th>Day</th><th>Subject</th><th>Time</th><th>Faculty</th></tr>
-                </thead>
-                <tbody>
-                  {SCHEDULE.map(([d, s, t, f]) => (
-                    <tr key={d}>
-                      <td><strong>{d}</strong></td>
-                      <td>{s}</td>
-                      <td style={{ color:'var(--text2)', fontSize:'13px' }}>{t}</td>
-                      <td style={{ color:'var(--text3)', fontSize:'13px' }}>{f}</td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
+            {ttLoad ? <Spinner /> : timetable.length === 0 ? (
+              <EmptyState icon="📅" title="No timetable yet" sub="Your teacher hasn't set up the timetable yet. Please check back later." />
+            ) : (
+              <div className="table-wrap">
+                <table>
+                  <thead>
+                    <tr><th>Day</th><th>Subject</th><th>Time</th><th>Faculty</th></tr>
+                  </thead>
+                  <tbody>
+                    {timetable.map(row => (
+                      <tr key={row._id}>
+                        <td><strong>{row.day}</strong></td>
+                        <td>{row.subject}</td>
+                        <td style={{ color:'var(--text2)', fontSize:'13px' }}>{row.time}</td>
+                        <td style={{ color:'var(--text3)', fontSize:'13px' }}>{row.faculty || '—'}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            )}
           </div>
         )}
 

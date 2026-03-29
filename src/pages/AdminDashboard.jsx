@@ -10,6 +10,7 @@ const NAV_ITEMS = [
   ['students',   '👥', 'Students'],
   ['amaterials', '📚', 'Materials'],
   ['adpp',       '📝', 'DPP'],
+  ['atimetable', '🗓', 'Timetable'],
   ['anotices',   '📢', 'Notices'],
   ['inquiries',  '📋', 'Inquiries'],
 ]
@@ -36,6 +37,13 @@ export default function AdminDashboard() {
     question:'', options:['','','',''],
     answerIndex:0, explanation:'',
   })
+  const [ttClass,    setTtClass]    = useState('12-PCM')
+  const [timetable,  setTimetable]  = useState([])
+  const [subjects,   setSubjects]   = useState([])
+  const [ttLoading,  setTtLoading]  = useState(false)
+  const [ttForm,     setTtForm]     = useState({ day:'Monday', subject:'', time:'', faculty:'' })
+  const [subForm,    setSubForm]    = useState({ name:'', color:'var(--accent)', tags:'' })
+  const [ttTab,      setTtTab]      = useState('timetable')
 
   useEffect(() => {
     if (!user) { navigate('/login'); return }
@@ -47,6 +55,10 @@ export default function AdminDashboard() {
     if (section === 'adpp') fetchDPP()
   }, [section, dppFilter.subject, dppFilter.class])
 
+  useEffect(() => {
+    if (section === 'atimetable') { fetchTimetable(); fetchSubjects() }
+  }, [section, ttClass])
+
   const fetchAll = () => {
     fetchStudents()
     fetchInquiries()
@@ -57,6 +69,75 @@ export default function AdminDashboard() {
   const flash = (msg, type = 'success') => {
     setFeedback({ msg, type })
     setTimeout(() => setFeedback({ msg:'', type:'success' }), 3000)
+  }
+
+  // ── TIMETABLE FUNCTIONS ──────────────────────────────────────
+  const fetchTimetable = async () => {
+    setTtLoading(true)
+    try {
+      const { data } = await api.get(`/timetable/all?class=${ttClass}`)
+      setTimetable(Array.isArray(data) ? data : [])
+    } catch (err) {
+      console.error('Timetable fetch failed:', err.message)
+      setTimetable([])
+    } finally { setTtLoading(false) }
+  }
+
+  const fetchSubjects = async () => {
+    try {
+      const { data } = await api.get(`/timetable/subjects/all?class=${ttClass}`)
+      setSubjects(Array.isArray(data) ? data : [])
+    } catch (err) {
+      console.error('Subjects fetch failed:', err.message)
+      setSubjects([])
+    }
+  }
+
+  const addTimetableRow = async () => {
+    if (!ttForm.subject.trim()) return flash('Please enter subject.', 'danger')
+    if (!ttForm.time.trim())    return flash('Please enter time.', 'danger')
+    if (!ttForm.day)            return flash('Please select day.', 'danger')
+    try {
+      const { data } = await api.post('/timetable', { ...ttForm, class: ttClass })
+      setTimetable(t => [...t, data].sort((a,b) => ['Monday','Tuesday','Wednesday','Thursday','Friday','Saturday','Sunday'].indexOf(a.day) - ['Monday','Tuesday','Wednesday','Thursday','Friday','Saturday','Sunday'].indexOf(b.day)))
+      setTtForm({ day:'Monday', subject:'', time:'', faculty:'' })
+      flash('✅ Timetable row added!')
+    } catch (err) {
+      flash(`❌ Failed: ${err.response?.data?.message || err.message}`, 'danger')
+    }
+  }
+
+  const deleteTimetableRow = async (id) => {
+    try {
+      await api.delete(`/timetable/${id}`)
+      setTimetable(t => t.filter(x => x._id !== id))
+      flash('Row deleted.')
+    } catch (err) {
+      flash(`❌ Failed: ${err.message}`, 'danger')
+    }
+  }
+
+  const addSubject = async () => {
+    if (!subForm.name.trim()) return flash('Please enter subject name.', 'danger')
+    try {
+      const tagsArray = subForm.tags.split(',').map(t => t.trim()).filter(Boolean)
+      const { data } = await api.post('/timetable/subjects', { ...subForm, tags: tagsArray, class: ttClass })
+      setSubjects(s => [...s, data])
+      setSubForm({ name:'', color:'var(--accent)', tags:'' })
+      flash('✅ Subject added!')
+    } catch (err) {
+      flash(`❌ Failed: ${err.response?.data?.message || err.message}`, 'danger')
+    }
+  }
+
+  const deleteSubject = async (id) => {
+    try {
+      await api.delete(`/timetable/subjects/${id}`)
+      setSubjects(s => s.filter(x => x._id !== id))
+      flash('Subject deleted.')
+    } catch (err) {
+      flash(`❌ Failed: ${err.message}`, 'danger')
+    }
   }
 
   // GET /api/dpp/all — admin sees all manual questions
@@ -500,6 +581,176 @@ export default function AdminDashboard() {
                 </div>
               ))
             }
+          </div>
+        )}
+
+        {/* TIMETABLE & CLASSES MANAGEMENT */}
+        {section === 'atimetable' && (
+          <div className="fade-in">
+            <div className="dash-title">Timetable & Classes</div>
+
+            {/* Class selector */}
+            <div style={{ display:'flex', gap:'8px', marginBottom:'20px', flexWrap:'wrap' }}>
+              {['9','10','11-PCM','11-PCB','12-PCM','12-PCB'].map(c => (
+                <button key={c}
+                  className={`btn btn-sm ${ttClass === c ? 'btn-primary' : 'btn-outline'}`}
+                  onClick={() => setTtClass(c)}>
+                  Class {c}
+                </button>
+              ))}
+            </div>
+
+            {/* Sub tabs */}
+            <div style={{ display:'flex', background:'var(--bg3)', borderRadius:'8px', padding:'3px', marginBottom:'24px', maxWidth:'360px' }}>
+              {[['timetable','📅 Timetable'],['subjects','📘 Subjects']].map(([key, label]) => (
+                <button key={key} onClick={() => setTtTab(key)} style={{
+                  flex:1, padding:'8px', borderRadius:'6px', fontSize:'13px',
+                  fontWeight:500, cursor:'pointer', border:'none',
+                  background: ttTab===key ? 'var(--surface)' : 'transparent',
+                  color: ttTab===key ? 'var(--text)' : 'var(--text2)',
+                  transition:'all .2s'
+                }}>{label}</button>
+              ))}
+            </div>
+
+            {/* ── TIMETABLE TAB ── */}
+            {ttTab === 'timetable' && (
+              <>
+                {/* Add row form */}
+                <div style={{ background:'var(--surface2)', borderRadius:'var(--r)', border:'1px solid var(--border)', padding:'18px', marginBottom:'24px' }}>
+                  <div style={{ fontWeight:600, marginBottom:'14px' }}>➕ Add Row to Class {ttClass} Timetable</div>
+                  <div style={{ display:'grid', gridTemplateColumns:'repeat(auto-fit,minmax(160px,1fr))', gap:'12px' }}>
+                    <div className="form-group" style={{ marginBottom:0 }}>
+                      <label className="form-label">Day *</label>
+                      <select className="form-input" value={ttForm.day}
+                        onChange={e => setTtForm(f => ({ ...f, day: e.target.value }))}>
+                        {['Monday','Tuesday','Wednesday','Thursday','Friday','Saturday','Sunday'].map(d => (
+                          <option key={d}>{d}</option>
+                        ))}
+                      </select>
+                    </div>
+                    <div className="form-group" style={{ marginBottom:0 }}>
+                      <label className="form-label">Subject *</label>
+                      <input className="form-input" placeholder="e.g. Physics"
+                        value={ttForm.subject}
+                        onChange={e => setTtForm(f => ({ ...f, subject: e.target.value }))} />
+                    </div>
+                    <div className="form-group" style={{ marginBottom:0 }}>
+                      <label className="form-label">Time *</label>
+                      <input className="form-input" placeholder="e.g. 6:00 – 7:30 AM"
+                        value={ttForm.time}
+                        onChange={e => setTtForm(f => ({ ...f, time: e.target.value }))} />
+                    </div>
+                    <div className="form-group" style={{ marginBottom:0 }}>
+                      <label className="form-label">Faculty</label>
+                      <input className="form-input" placeholder="e.g. Ram Sir"
+                        value={ttForm.faculty}
+                        onChange={e => setTtForm(f => ({ ...f, faculty: e.target.value }))} />
+                    </div>
+                  </div>
+                  <button className="btn btn-primary" style={{ marginTop:'14px' }} onClick={addTimetableRow}>
+                    Add Row
+                  </button>
+                </div>
+
+                {/* Timetable list */}
+                {ttLoading ? (
+                  <div style={{ textAlign:'center', padding:'32px', color:'var(--text3)' }}>Loading...</div>
+                ) : timetable.length === 0 ? (
+                  <div style={{ textAlign:'center', padding:'40px', color:'var(--text3)' }}>
+                    <div style={{ fontSize:'36px', marginBottom:'10px' }}>📅</div>
+                    <div style={{ fontWeight:600, color:'var(--text2)', marginBottom:'6px' }}>No timetable yet for Class {ttClass}</div>
+                    <div style={{ fontSize:'13px' }}>Add rows using the form above.</div>
+                  </div>
+                ) : (
+                  <div className="table-wrap">
+                    <table>
+                      <thead>
+                        <tr><th>Day</th><th>Subject</th><th>Time</th><th>Faculty</th><th>Action</th></tr>
+                      </thead>
+                      <tbody>
+                        {timetable.map(row => (
+                          <tr key={row._id}>
+                            <td><strong>{row.day}</strong></td>
+                            <td>{row.subject}</td>
+                            <td style={{ fontSize:'13px', color:'var(--text2)' }}>{row.time}</td>
+                            <td style={{ fontSize:'13px', color:'var(--text3)' }}>{row.faculty || '—'}</td>
+                            <td>
+                              <button className="btn btn-sm btn-danger"
+                                onClick={() => deleteTimetableRow(row._id)}>
+                                Delete
+                              </button>
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                )}
+              </>
+            )}
+
+            {/* ── SUBJECTS TAB ── */}
+            {ttTab === 'subjects' && (
+              <>
+                {/* Add subject form */}
+                <div style={{ background:'var(--surface2)', borderRadius:'var(--r)', border:'1px solid var(--border)', padding:'18px', marginBottom:'24px' }}>
+                  <div style={{ fontWeight:600, marginBottom:'14px' }}>➕ Add Subject for Class {ttClass}</div>
+                  <div style={{ display:'grid', gridTemplateColumns:'repeat(auto-fit,minmax(180px,1fr))', gap:'12px' }}>
+                    <div className="form-group" style={{ marginBottom:0 }}>
+                      <label className="form-label">Subject Name *</label>
+                      <input className="form-input" placeholder="e.g. Physics"
+                        value={subForm.name}
+                        onChange={e => setSubForm(f => ({ ...f, name: e.target.value }))} />
+                    </div>
+                    <div className="form-group" style={{ marginBottom:0 }}>
+                      <label className="form-label">Color</label>
+                      <select className="form-input" value={subForm.color}
+                        onChange={e => setSubForm(f => ({ ...f, color: e.target.value }))}>
+                        <option value="var(--accent)">Purple</option>
+                        <option value="var(--cyan)">Cyan</option>
+                        <option value="var(--green)">Green</option>
+                        <option value="var(--gold)">Gold</option>
+                        <option value="var(--pink)">Pink</option>
+                        <option value="var(--red)">Red</option>
+                      </select>
+                    </div>
+                    <div className="form-group" style={{ marginBottom:0 }}>
+                      <label className="form-label">Tags (comma separated)</label>
+                      <input className="form-input" placeholder="e.g. Mechanics, Optics, Waves"
+                        value={subForm.tags}
+                        onChange={e => setSubForm(f => ({ ...f, tags: e.target.value }))} />
+                    </div>
+                  </div>
+                  <button className="btn btn-primary" style={{ marginTop:'14px' }} onClick={addSubject}>
+                    Add Subject
+                  </button>
+                </div>
+
+                {/* Subjects list */}
+                {subjects.length === 0 ? (
+                  <div style={{ textAlign:'center', padding:'40px', color:'var(--text3)' }}>
+                    <div style={{ fontSize:'36px', marginBottom:'10px' }}>📘</div>
+                    <div style={{ fontWeight:600, color:'var(--text2)', marginBottom:'6px' }}>No subjects for Class {ttClass}</div>
+                    <div style={{ fontSize:'13px' }}>Add subjects using the form above.</div>
+                  </div>
+                ) : subjects.map(s => (
+                  <div key={s._id} style={{ background:'var(--surface)', border:`1px solid ${s.color}33`, borderLeft:`4px solid ${s.color}`, borderRadius:'var(--r)', padding:'14px 18px', marginBottom:'10px', display:'flex', alignItems:'center', gap:'12px', flexWrap:'wrap' }}>
+                    <div style={{ flex:1 }}>
+                      <div style={{ fontWeight:600, color:s.color, marginBottom:'6px' }}>{s.name}</div>
+                      <div style={{ display:'flex', gap:'6px', flexWrap:'wrap' }}>
+                        {s.tags?.map(t => (
+                          <span key={t} className="badge" style={{ background:`${s.color}18`, color:s.color, fontSize:'11px' }}>{t}</span>
+                        ))}
+                      </div>
+                    </div>
+                    <button className="btn btn-sm btn-danger" onClick={() => deleteSubject(s._id)}>
+                      Delete
+                    </button>
+                  </div>
+                ))}
+              </>
+            )}
           </div>
         )}
 
