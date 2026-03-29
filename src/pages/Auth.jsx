@@ -11,51 +11,53 @@ export function Login() {
   const [error, setError]     = useState('')
   const [pending, setPending] = useState(false)
   const [loading, setLoading] = useState(false)
-  const { login }             = useAuth()
+  const { login, logout }     = useAuth()   // ← added logout
   const navigate              = useNavigate()
 
   const handleLogin = async () => {
-  setError('')
-  setPending(false)
+    setError('')
+    setPending(false)
 
-  if (!email.trim()) return setError('Please enter your email address.')
-  if (!pass.trim())  return setError('Please enter your password.')
+    if (!email.trim()) return setError('Please enter your email address.')
+    if (!pass.trim())  return setError('Please enter your password.')
 
-  setLoading(true)
-  try {
-    const user = await login(email.trim(), pass)
+    setLoading(true)
+    try {
+      const user = await login(email.trim(), pass)
 
-    // ── Role check ──────────────────────────────────────────
-    if (tab === 'student' && user.role === 'admin') {
-      setError('Please use the Teacher / Admin tab to login as admin.')
+      // ── Tab-based role check ────────────────────────────────
+      if (tab === 'student' && user.role === 'admin') {
+        logout()  // clear token immediately
+        setError('Invalid Credentials. Please login from the Teacher/Admin tab.')
+        setLoading(false)
+        return
+      }
+      if (tab === 'teacher' && user.role === 'student') {
+        logout()  // clear token immediately
+        setError('Invalid Credentials. Please login from the Student tab.')
+        setLoading(false)
+        return
+      }
+      // ────────────────────────────────────────────────────────
+
+      navigate(user.role === 'admin' ? '/admin' : '/dashboard')
+    } catch (err) {
+      const msg = err.response?.data?.message
+      if (err.response?.data?.pending) {
+        setPending(true)
+      } else if (err.response?.status === 401) {
+        setError(msg || 'Invalid email or password. Please try again.')
+      } else if (err.response?.status === 403) {
+        setPending(true)
+      } else if (!err.response) {
+        setError('Cannot connect to server. Please check your internet connection.')
+      } else {
+        setError(msg || 'Login failed. Please try again.')
+      }
+    } finally {
       setLoading(false)
-      return
     }
-    if (tab === 'admin' && user.role === 'student') {
-      setError('Please use the Student tab to login as a student.')
-      setLoading(false)
-      return
-    }
-    // ────────────────────────────────────────────────────────
-
-    navigate(user.role === 'admin' ? '/admin' : '/dashboard')
-  } catch (err) {
-    const msg = err.response?.data?.message
-    if (err.response?.data?.pending) {
-      setPending(true)
-    } else if (err.response?.status === 401) {
-      setError(msg || 'Invalid email or password. Please try again.')
-    } else if (err.response?.status === 403) {
-      setPending(true)
-    } else if (!err.response) {
-      setError('Cannot connect to server. Please check your internet connection.')
-    } else {
-      setError(msg || 'Login failed. Please try again.')
-    }
-  } finally {
-    setLoading(false)
   }
-}
 
   return (
     <div style={{ minHeight:'80vh', display:'flex', alignItems:'center', justifyContent:'center', padding:'40px 24px' }}>
@@ -107,7 +109,7 @@ export function Login() {
             />
           </div>
 
-          {/* ERROR BOX — shown when credentials are wrong */}
+          {/* ERROR BOX */}
           {error && (
             <div style={{
               display: 'flex',
@@ -128,7 +130,7 @@ export function Login() {
             </div>
           )}
 
-          {/* PENDING BOX — shown when account not yet approved */}
+          {/* PENDING BOX */}
           {pending && (
             <div style={{
               display: 'flex',
