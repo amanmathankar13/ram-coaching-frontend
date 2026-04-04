@@ -397,7 +397,7 @@ export function Contact() {
             {[
               ['📍','Address',          'Ram Coaching Classes by Ayush Mathankar, near Sahu Flour Mill, Shyamla Hills, Ranipur, Madhya Pradesh 461551'],
               ['📞','Phone / WhatsApp', '+91 94078 52570\nMon–Sat, 9 AM – 8 PM'],
-              ['✉️','Email',           'info@ramcoaching.in\nWe reply within 24 hours'],
+              ['✉️','Email',           'ayushmathankar24@gmail.com\nWe reply within 24 hours'],
               ['🕐','Timings',         'Coaching: 6 AM – 8:30 PM\nOffice: 9 AM – 6 PM'],
             ].map(([icon,title,info]) => (
               <div key={title} className="card">
