@@ -395,7 +395,7 @@ export function Contact() {
         <div>
           <div style={{ display:'grid', gridTemplateColumns:'repeat(auto-fit,minmax(220px,1fr))', gap:'16px', marginBottom:'28px' }}>
             {[
-              ['📍','Address',          'A1-Type 10/5 Post Office Colony, Tawanagar, Hoshangabad – 461551, Madhya Pradesh'],
+              ['📍','Address',          'Ram Coaching Classes by Ayush Mathankar, near Sahu Flour Mill, Shyamla Hills, Ranipur, Madhya Pradesh 461551'],
               ['📞','Phone / WhatsApp', '+91 94078 52570\nMon–Sat, 9 AM – 8 PM'],
               ['✉️','Email',           'info@ramcoaching.in\nWe reply within 24 hours'],
               ['🕐','Timings',         'Coaching: 6 AM – 8:30 PM\nOffice: 9 AM – 6 PM'],
@@ -415,7 +415,7 @@ export function Contact() {
             <span style={{ fontSize:'40px' }}>🗺️</span>
             <span style={{ fontWeight:600 }}>Ram Coaching Classes</span>
             <span style={{ fontSize:'12px' }}>Tawanagar – 461551</span>
-            <a href="https://maps.google.com/?q=Tawanagar+Hoshangabad+Madhya+Pradesh" target="_blank" rel="noreferrer" className="btn btn-sm btn-outline" style={{ marginTop:'8px' }}>Open in Google Maps</a>
+            <a href="https://maps.app.goo.gl/NktpJfxrt5trev3v8" target="_blank" rel="noreferrer" className="btn btn-sm btn-outline" style={{ marginTop:'8px' }}>Open in Google Maps</a>
           </div>
           <div className="notice">
             <div className="notice-title">📱 Book a Free Counselling Session</div>
