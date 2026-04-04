@@ -54,7 +54,7 @@ export default function Footer() {
             <h4 style={{ fontSize:'12px', fontWeight:600, color:'var(--text3)', textTransform:'uppercase', letterSpacing:'.5px', marginBottom:'14px' }}>Contact</h4>
             <p style={{ fontSize:'14px', color:'var(--text2)', marginBottom:'8px' }}>📍 Tawanagar – 461551</p>
             <p style={{ fontSize:'14px', color:'var(--text2)', marginBottom:'8px' }}>📞 +91 94078 52570</p>
-            <p style={{ fontSize:'12px', color:'var(--text2)', marginBottom:'8px' }}>✉ ayushmathankar24@gmail.com</p>
+            <p style={{ fontSize:'11px', color:'var(--text2)', marginBottom:'8px' }}>✉ ayushmathankar24@gmail.com</p>
             <p style={{ fontSize:'14px', color:'var(--text2)' }}>🕐 Mon–Sat, 9 AM – 8 PM</p>
           </div>
         </div>
